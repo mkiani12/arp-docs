@@ -1,54 +1,24 @@
 import * as dotenv from "dotenv";
 dotenv.config({
-  path: `./.env/main.${process.env.NODE_ENV}.env`,
+  path: `./env/main.${process.env.NODE_ENV}.env`,
   override: false,
 });
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ["@sidebase/nuxt-auth", "@pinia/nuxt", "@vueuse/nuxt"],
-  plugins: ["~/plugins/plugins"],
-  auth: {
-    baseURL: process.env.BASE_URL,
-    provider: {
-      type: "local",
-      pages: {
-        login: "/auth/login",
-      },
-      endpoints: {
-        signOut: {
-          path: "/auth/logout",
-          method: "post",
-        },
-        signIn: {
-          path: "/auth/entrance",
-          method: "post",
-        },
-        signUp: {
-          path: "/auth/signup",
-          method: "post",
-        },
-        getSession: {
-          path: "/auth/session",
-          method: "get",
-        },
-      },
-      sessionDataType: {
-        userInformations: "UserInformations",
-        userPositions: "JobData[]",
-      },
-      token: {
-        maxAgeInSeconds: 60 * 60 * 24,
-      },
-      // @ts-ignore
-      // refreshToken: {
-      //   maxAgeInSeconds: 60 * 60 * 24,
-      // },
+  app: {
+    head: {
+      title: "ARP-GR - AbadRahan Pars International Group",
+      titleTemplate: "%s - ARP-GR",
     },
-    globalAppMiddleware: {
-      isEnabled: true,
+    pageTransition: { name: "page", mode: "out-in" },
+    layoutTransition: {
+      name: "slide",
+      mode: "out-in",
     },
   },
 
+  modules: ["@pinia/nuxt", "@vueuse/nuxt", "unplugin-icons/nuxt"],
+  plugins: ["~/plugins/plugins"],
   ssr: false,
 
   typescript: {
@@ -75,4 +45,5 @@ export default defineNuxtConfig({
 
   devServerHandlers: [],
   hooks: {},
+  compatibilityDate: "2024-09-02",
 });

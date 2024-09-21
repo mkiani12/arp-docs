@@ -59,8 +59,6 @@ const sDrawer = ref(true);
         >
           <Menu2Icon size="20" stroke-width="1.5" />
         </v-btn>
-        <!-- User Profile -->
-        <LayoutFullVerticalHeaderProfileDD />
       </div>
 
       <div>

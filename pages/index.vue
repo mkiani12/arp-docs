@@ -1,24 +1,15 @@
 <script setup lang="ts">
 /*Call Components*/
-import LinkCards from "~/components/dashboard/LinkCards.vue";
-import Process from "~/components/dashboard/Process.vue";
-import Requests from "~/components/dashboard/Requests.vue";
 </script>
 <template>
   <v-row>
     <v-col cols="12">
       <v-row>
-        <v-col cols="12">
-          <LinkCards />
-        </v-col>
+        <v-col cols="12"> </v-col>
         <!-- Sales overview -->
-        <v-col cols="12" lg="8">
-          <Process />
-        </v-col>
+        <v-col cols="12" lg="8"> </v-col>
         <!-- Yearly Breakup / Monthly Earnings -->
-        <v-col cols="12" lg="4">
-          <Requests />
-        </v-col>
+        <v-col cols="12" lg="4"> </v-col>
       </v-row>
     </v-col>
   </v-row>

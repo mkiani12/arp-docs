@@ -1,5 +1,4 @@
 <script setup>
-import Icon from "../Icon.vue";
 const props = defineProps({ item: Object, level: Number });
 </script>
 
@@ -11,12 +10,13 @@ const props = defineProps({ item: Object, level: Number });
     class="mb-1"
     color="primary"
     :disabled="item.disabled"
-    exact
     :target="item.type === 'external' ? '_blank' : ''"
   >
     <!---If icon-->
     <template v-slot:prepend>
-      <Icon :item="item.icon" :level="level" />
+      <span>
+        <v-icon :icon="item.icon" size="22"></v-icon>
+      </span>
     </template>
     <v-list-item-title>{{ item.title }}</v-list-item-title>
     <!---If Caption-->

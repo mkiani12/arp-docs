@@ -1,9 +1,14 @@
-import {
-  CopyIcon,
-  LayoutDashboardIcon,
-  FormsIcon,
-  PaperclipIcon,
-} from "vue-tabler-icons";
+import DashboardIcon from "~icons/material-symbols/dashboard-outline-rounded";
+
+import TagsIcon from "~icons/bx/bxs-component";
+import CodesIcon from "~icons/material-symbols/code-blocks-outline-rounded";
+
+import FormsIcon from "~icons/tabler/forms";
+import ReportIcon from "~icons/icon-park-outline/table-report";
+import ListIcon from "~icons/material-symbols/event-list-outline-rounded";
+
+import FrontendIcon from "~icons/simple-icons/frontendmentor";
+import BackendIcon from "~icons/streamline/programming-browser-build-build-website-development-window-code-programming-web-backend-browser-dev";
 
 export interface menu {
   header?: string;
@@ -24,47 +29,47 @@ const sidebarItem: menu[] = [
   { header: "خانه" },
   {
     title: "داشبورد",
-    icon: LayoutDashboardIcon,
+    icon: DashboardIcon,
     to: "/",
   },
+  { header: "فهرست ها" },
   {
-    title: "لیست مدارک سازمانی",
-    icon: PaperclipIcon,
-    to: "/forms/list/documents",
+    title: "تگ ها",
+    icon: TagsIcon,
+    to: "/menu/tags",
   },
-  { header: "سیستم ها و روش ها" },
   {
-    title: "ساخت روند",
-    icon: CopyIcon,
-    to: "/process",
+    title: "کد ها",
+    icon: CodesIcon,
+    to: "/menu/codes",
   },
-  { header: "فرم ها" },
+  { header: "ساختن" },
   {
-    title: "فرم ها",
+    title: "ساخت فرم",
     icon: FormsIcon,
-    to: "/forms",
+    to: "/build/form",
   },
-  // {
-  //   title: "Typography",
-  //   icon: TypographyIcon,
-  //   to: "/ui/typography",
-  // },
-  // {
-  //   title: "Shadow",
-  //   icon: CopyIcon,
-  //   to: "/ui/shadow",
-  // },
-  // { header: "Extra" },
-  // {
-  //   title: "Icons",
-  //   icon: MoodHappyIcon,
-  //   to: "/icons",
-  // },
-  // {
-  //   title: "Sample Page",
-  //   icon: ApertureIcon,
-  //   to: "/sample-page",
-  // },
+  {
+    title: "ساخت گزارش",
+    icon: ReportIcon,
+    to: "/build/report",
+  },
+  {
+    title: "ساخت لیست",
+    icon: ListIcon,
+    to: "/build/list",
+  },
+  { header: "آموزش" },
+  {
+    title: "مستندات آریانیک",
+    icon: FrontendIcon,
+    to: "/docs/frontend",
+  },
+  {
+    title: "مستندات NodeJS",
+    icon: BackendIcon,
+    to: "/docs/backend",
+  },
 ];
 
 export default sidebarItem;
