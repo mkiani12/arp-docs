@@ -166,8 +166,13 @@ const copy = (type: "JS" | "HTML" | "LIST") => {
   notify.showMessage("Copied to clipboard!", "", 1500);
 };
 
+const dontRepeat = (v: string): string | boolean => {
+  const foundedRepeat = form.value.fields.filter((el) => el.lname == v);
+  return foundedRepeat.length > 1 ? "نام لاتین نباید تکراری باشد" : true;
+};
+
 const goToReportPage = () => {
-  report.setFields(form.value.fields, form.value.id);
+  report.setFields(form.value.fields, form.value.id, form.value.title);
   router.push("/build/report?preSet=true");
 };
 </script>
@@ -262,7 +267,7 @@ const goToReportPage = () => {
                   <v-text-field
                     v-model="field.lname"
                     label="نام لاتین"
-                    :rules="[rules.required]"
+                    :rules="[rules.required, dontRepeat]"
                   >
                   </v-text-field>
                   <v-btn icon variant="text" @click="openOptions(field)">

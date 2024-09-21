@@ -80,6 +80,8 @@ const dontRepeat = (v: string): string | boolean => {
 
 onMounted(() => {
   if (route.query.preSet && report.fields.length > 0) {
+    reportData.value.formId = report.formId;
+    reportData.value.title = report.formTitle;
     reportData.value.showFields = report.fields;
   }
 });
