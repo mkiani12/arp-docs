@@ -31,6 +31,102 @@ const typeItems: TypeItem[] = [
   },
 ];
 
+// main functions
+
+const generateFormJS = (
+  formId: string,
+  listPage: string,
+  fields: FormField[]
+): string => {
+  return `// config file
+document.addEventListener("Validated", () => {
+  document.getElementById("CreatedBy").value = nodeVue.selectedJob.nationalCode;
+});
+
+////formLoad Event
+document.addEventListener("formLoad", async () => {
+  document.getElementById("ModifiedBy").value =
+    nodeVue.selectedJob.nationalCode;
+  document.getElementById("ModifiedDate").value = moment().format();
+});
+
+const formData = {
+  formName: "${formId}",
+  listLink: "${listPage}",
+  formFields: [
+    // default field
+    { name: "CreatedBy", type: 1 },
+    // regular fields
+${generateRegularFields(fields)}  ],
+  subFormData: [],
+};
+
+//<AryanicCMS:tags:36>`;
+};
+
+const generateFormHTML = (
+  title: string,
+  fieldPerRow: number,
+  fields: FormField[]
+): string => {
+  return `<table
+  class="my-6 shadow-lg bg-white dark:bg-gray-800 table-auto formtable"
+  style="font-family: tahoma; font-size: 9pt"
+  dir="rtl"
+  border="0"
+  cellspacing="2"
+  cellpadding="2"
+  width="100%"
+>
+  <tbody>
+    <tr class="mainTr">
+      <td>
+        <span class="font-bold"> ${title} </span>
+        <input type="hidden" name="FPID" />
+        <input type="hidden" name="FOPID" />
+        <input type="hidden" name="AryanicAformEditRecordId" />
+        <input type="hidden" name="CreatedBy" />
+        <input type="hidden" name="ModifiedBy" />
+        <input type="hidden" name="ModifiedDate" />
+      </td>
+    </tr>
+${generateFormHtmlFields(fields, fieldPerRow)}    <tr>
+      <td>
+        <input class="nothidden" value="ثبت" type="submit" name="submit" />
+      </td>
+    </tr>
+  </tbody>
+</table>`;
+};
+
+const generateFormLIST = (
+  formId: string,
+  formPage: string,
+  showProject: boolean,
+  formSelf: FormData
+): string => {
+  return `<AryanicCMS:tags:44>
+  const formData = {
+    formName: '${formId}',
+    formLink: '${formPage}',
+    formJoinString: '${
+      showProject
+        ? "left join form_40 on " +
+          formId +
+          ".FPID = form_40.id and form_40.del = 0"
+        : ""
+    }',
+    formFields: [
+${generateListFields(formSelf)}    ],
+    projectFilterField: "${formId}.FPID",
+    pageSize: 10,
+    data: [],
+  }
+<AryanicCMS:tags:45>`;
+};
+
+// main functions
+
 const generateRegularFields = (fields: FormField[]): string => {
   let result = "";
   for (const element of fields) {
@@ -176,9 +272,4 @@ const convertTypeToNumber = (type: string): number => {
   }
 };
 
-export {
-  typeItems,
-  generateRegularFields,
-  generateListFields,
-  generateFormHtmlFields,
-};
+export { typeItems, generateFormJS, generateFormHTML, generateFormLIST };

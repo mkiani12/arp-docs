@@ -5,7 +5,6 @@ import CodesIcon from "~icons/material-symbols/code-blocks-outline-rounded";
 
 import FormsIcon from "~icons/tabler/forms";
 import ReportIcon from "~icons/icon-park-outline/table-report";
-import ListIcon from "~icons/material-symbols/event-list-outline-rounded";
 
 import FrontendIcon from "~icons/simple-icons/frontendmentor";
 import BackendIcon from "~icons/streamline/programming-browser-build-build-website-development-window-code-programming-web-backend-browser-dev";
@@ -45,7 +44,7 @@ const sidebarItem: menu[] = [
   },
   { header: "ساختن" },
   {
-    title: "ساخت فرم",
+    title: "ساخت فرم و لیست",
     icon: FormsIcon,
     to: "/build/form",
   },
@@ -53,11 +52,6 @@ const sidebarItem: menu[] = [
     title: "ساخت گزارش",
     icon: ReportIcon,
     to: "/build/report",
-  },
-  {
-    title: "ساخت لیست",
-    icon: ListIcon,
-    to: "/build/list",
   },
   { header: "آموزش" },
   {

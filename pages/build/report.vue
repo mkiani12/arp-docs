@@ -9,6 +9,7 @@ import { typeItems } from "~/data/formsData";
 
 import type { FormField } from "~/types/forms/FormData";
 import type { ReportData } from "~/types/forms/Report";
+import { generateReportHTML, generateReportTAG } from "~/data/reportData";
 
 const route = useRoute();
 const notify = useSnackbarStore();
@@ -19,21 +20,35 @@ useHead({
   title: "Build Form",
 });
 
-const selectedField = ref<FormField | null>(null);
-
 const formCode = ref({
-  reportTag: "",
-  reportHTML: "",
+  reportHTML: computed(() =>
+    generateReportHTML(
+      reportData.value.title,
+      reportData.value.formId,
+      reportData.value.tagId,
+      reportData.value.unit,
+      reportData.value.showProject,
+      reportData.value.showFields
+    )
+  ),
+  reportTAG: computed(() => {
+    return generateReportTAG(
+      reportData.value.formId,
+      reportData.value.showProject,
+      reportData.value.showFields
+    );
+  }),
 });
 
-const step = ref<number>(1);
+const step = ref<number>(2);
 const fieldsValid = ref(false);
-const listValid = ref(false);
 
 const reportData = ref<ReportData>({
   title: "",
   formId: "",
   showProject: false,
+  tagId: "",
+  unit: "",
   showFields: [
     {
       type: "textbox",
@@ -58,15 +73,13 @@ const deleteField = (field: FormField) => {
 };
 
 const copiedHTML = ref(false);
+const copiedTAG = ref(false);
 const copy = (type: "TAG" | "HTML") => {
-  if (type == "HTML") {
-    navigator.clipboard.writeText(formCode.value.reportHTML);
-    copiedHTML.value = true;
-    setTimeout(() => {
-      copiedHTML.value = false;
-    }, 1500);
-  } else if (type == "TAG") {
-  }
+  navigator.clipboard.writeText(formCode.value[`report${type}`]);
+  eval(`copied${type}`).value = true;
+  setTimeout(() => {
+    eval(`copied${type}`).value = false;
+  }, 1500);
 
   notify.showMessage("Copied to clipboard!", "", 1500);
 };
@@ -125,6 +138,19 @@ onMounted(() => {
                   </v-text-field>
                 </v-col>
                 <v-col cols="12" md="6">
+                  <v-text-field
+                    v-model="reportData.tagId"
+                    label="ایدی تگ"
+                    placeholder="###"
+                    :rules="[rules.required]"
+                  >
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="reportData.unit" label="واحد مربوطه">
+                  </v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
                   <v-checkbox
                     v-model="reportData.showProject"
                     label="نمایش پروژه"
@@ -150,7 +176,7 @@ onMounted(() => {
                 <v-col>
                   <v-text-field
                     v-model="field.name"
-                    label="نام فیلد"
+                    label="نام نمایشی فیلد"
                     :rules="[rules.required]"
                   >
                   </v-text-field>
@@ -190,10 +216,16 @@ onMounted(() => {
         <v-row>
           <v-col class="text-h5" cols="12"> خروجی </v-col>
           <v-col cols="12">
+            <v-checkbox
+              v-model="reportData.showProject"
+              label="نمایش پروژه"
+            ></v-checkbox>
+          </v-col>
+          <v-col cols="12">
             <div dir="ltr">
               <v-card class="overflow-hidden">
                 <v-card-title class="d-flex justify-space-between align-center">
-                  <div>Form HTML</div>
+                  <div>Report HTML</div>
                   <v-btn variant="text" icon @click="copy('HTML')">
                     <v-icon :icon="copiedHTML ? TickIcon : CopyIcon"></v-icon>
                   </v-btn>
@@ -213,13 +245,13 @@ onMounted(() => {
             <div dir="ltr">
               <v-card class="overflow-hidden">
                 <v-card-title class="d-flex justify-space-between align-center">
-                  <div>List Code</div>
+                  <div>Report Tag SQL</div>
                   <v-btn variant="text" icon @click="copy('TAG')">
-                    <v-icon :icon="copiedHTML ? TickIcon : CopyIcon"></v-icon>
+                    <v-icon :icon="copiedTAG ? TickIcon : CopyIcon"></v-icon>
                   </v-btn>
                 </v-card-title>
                 <ClientOnly>
-                  <highlightjs autodetect :code="formCode.reportTag" />
+                  <highlightjs language="sql" :code="formCode.reportTAG" />
                 </ClientOnly>
               </v-card>
             </div>

@@ -7,9 +7,9 @@ import TickIcon from "~icons/charm/tick";
 
 import {
   typeItems,
-  generateRegularFields,
-  generateListFields,
-  generateFormHtmlFields,
+  generateFormJS,
+  generateFormHTML,
+  generateFormLIST,
 } from "~/data/formsData";
 import type { FormField, FormData } from "~/types/forms/FormData";
 
@@ -25,85 +25,24 @@ useHead({
 const selectedField = ref<FormField | null>(null);
 
 const formCode = ref({
-  formJS: computed(() => {
-    return `// config file
-document.addEventListener("Validated", () => {
-  document.getElementById("CreatedBy").value = nodeVue.selectedJob.nationalCode;
-});
-
-////formLoad Event
-document.addEventListener("formLoad", async () => {
-  document.getElementById("ModifiedBy").value =
-    nodeVue.selectedJob.nationalCode;
-  document.getElementById("ModifiedDate").value = moment().format();
-});
-
-const formData = {
-  formName: "${form.value.id}",
-  listLink: "${form.value.listPage}",
-  formFields: [
-    // default field
-    { name: "CreatedBy", type: 1 },
-    // regular fields
-${generateRegularFields(form.value.fields)}  ],
-  subFormData: [],
-};
-
-//<AryanicCMS:tags:36>
-`;
-  }),
-  formHTML: computed(() => {
-    return `<table
-  class="my-6 shadow-lg bg-white dark:bg-gray-800 table-auto formtable"
-  style="font-family: tahoma; font-size: 9pt"
-  dir="rtl"
-  border="0"
-  cellspacing="2"
-  cellpadding="2"
-  width="100%"
->
-  <tbody>
-    <tr class="mainTr">
-      <td>
-        <span class="font-bold"> ${form.value.title} </span>
-        <input type="hidden" name="FPID" />
-        <input type="hidden" name="FOPID" />
-        <input type="hidden" name="AryanicAformEditRecordId" />
-        <input type="hidden" name="CreatedBy" />
-        <input type="hidden" name="ModifiedBy" />
-        <input type="hidden" name="ModifiedDate" />
-      </td>
-    </tr>
-${generateFormHtmlFields(form.value.fields, form.value.fieldPerRow)}    <tr>
-      <td>
-        <input class="nothidden" value="ثبت" type="submit" name="submit" />
-      </td>
-    </tr>
-  </tbody>
-</table>`;
-  }),
-  listCode: computed(() => {
-    return `<AryanicCMS:tags:44>
-  const formData = {
-    formName: '${form.value.id}',
-    formLink: '${form.value.page}',
-    formJoinString: '${
-      form.value.listShowProject
-        ? "left join form_40 on " +
-          form.value.id +
-          ".FPID = form_40.id and form_40.del = 0"
-        : ""
-    }',
-    formFields: [
-${generateListFields(form.value)}    ],
-    projectFilterField: "${form.value.id}.FPID",
-    pageSize: 10,
-    data: [],
-  }
-<AryanicCMS:tags:45>`;
-  }),
-  reportTag: "",
-  reportHTML: "",
+  formJS: computed(() =>
+    generateFormJS(form.value.id, form.value.listPage, form.value.fields)
+  ),
+  formHTML: computed(() =>
+    generateFormHTML(
+      form.value.title,
+      form.value.fieldPerRow,
+      form.value.fields
+    )
+  ),
+  formLIST: computed(() =>
+    generateFormLIST(
+      form.value.id,
+      form.value.page,
+      form.value.listShowProject,
+      form.value
+    )
+  ),
 });
 
 const step = ref<number>(1);
@@ -153,15 +92,14 @@ const editListName = (field: FormField) => {
 };
 
 const copiedJS = ref(false);
+const copiedHTML = ref(false);
+const copiedLIST = ref(false);
 const copy = (type: "JS" | "HTML" | "LIST") => {
-  if (type == "JS") {
-    navigator.clipboard.writeText(formCode.value.formJS);
-    copiedJS.value = true;
-    setTimeout(() => {
-      copiedJS.value = false;
-    }, 1500);
-  } else if (type == "HTML") {
-  }
+  navigator.clipboard.writeText(formCode.value[`form${type}`]);
+  eval(`copied${type}`).value = true;
+  setTimeout(() => {
+    eval(`copied${type}`).value = false;
+  }, 1500);
 
   notify.showMessage("Copied to clipboard!", "", 1500);
 };
@@ -385,8 +323,8 @@ const goToReportPage = () => {
               <v-card class="overflow-hidden">
                 <v-card-title class="d-flex justify-space-between align-center">
                   <div>Form HTML</div>
-                  <v-btn variant="text" icon @click="copy('JS')">
-                    <v-icon :icon="copiedJS ? TickIcon : CopyIcon"></v-icon>
+                  <v-btn variant="text" icon @click="copy('HTML')">
+                    <v-icon :icon="copiedHTML ? TickIcon : CopyIcon"></v-icon>
                   </v-btn>
                 </v-card-title>
                 <ClientOnly>
@@ -401,16 +339,22 @@ const goToReportPage = () => {
             </div>
           </v-col>
           <v-col cols="12">
+            <v-checkbox
+              v-model="form.listShowProject"
+              label="نمایش پروژه"
+            ></v-checkbox>
+          </v-col>
+          <v-col cols="12">
             <div dir="ltr">
               <v-card class="overflow-hidden">
                 <v-card-title class="d-flex justify-space-between align-center">
                   <div>List Code</div>
                   <v-btn variant="text" icon @click="copy('LIST')">
-                    <v-icon :icon="copiedJS ? TickIcon : CopyIcon"></v-icon>
+                    <v-icon :icon="copiedLIST ? TickIcon : CopyIcon"></v-icon>
                   </v-btn>
                 </v-card-title>
                 <ClientOnly>
-                  <highlightjs autodetect :code="formCode.listCode" />
+                  <highlightjs autodetect :code="formCode.formLIST" />
                 </ClientOnly>
               </v-card>
             </div>
