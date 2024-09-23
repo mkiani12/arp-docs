@@ -40,7 +40,7 @@ const formCode = ref({
   }),
 });
 
-const step = ref<number>(2);
+const step = ref<number>(1);
 const fieldsValid = ref(false);
 
 const reportData = ref<ReportData>({
