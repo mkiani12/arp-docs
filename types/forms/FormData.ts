@@ -3,18 +3,36 @@ interface TypeItem {
   value: string;
 }
 
+type FieldTypes =
+  | "textbox"
+  | "select"
+  | "textarea"
+  | "radio"
+  | "checkbox"
+  | "image"
+  | "file";
+
+type FileFieldOptions = {};
+type CheckboxFieldOptions = {};
+type RadioFieldOptions = {};
+
+type SelectFieldOptions = {
+  selectOptions: TypeItem[];
+};
+
+type RegularFieldOptions = {};
+
 interface FormField {
-  type:
-    | "textbox"
-    | "select"
-    | "textarea"
-    | "radio"
-    | "checkbox"
-    | "image"
-    | "file";
+  type: FieldTypes;
   name: string;
   lname: string;
   listName?: string;
+  options?:
+    | FileFieldOptions
+    | CheckboxFieldOptions
+    | RadioFieldOptions
+    | SelectFieldOptions
+    | RegularFieldOptions;
 }
 
 interface FormData {

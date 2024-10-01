@@ -4,6 +4,8 @@ import AddIcon from "~icons/material-symbols/add-rounded";
 import OptionsIcon from "~icons/cil/options";
 import CopyIcon from "~icons/material-symbols/content-copy-outline-rounded";
 import TickIcon from "~icons/charm/tick";
+import DeleteIcon from "~icons/material-symbols/delete-outline-rounded";
+import SettingIcon from "~icons/material-symbols/settings-outline-rounded";
 
 import {
   typeItems,
@@ -21,8 +23,6 @@ const router = useRouter();
 useHead({
   title: "Build Form",
 });
-
-const selectedField = ref<FormField | null>(null);
 
 const formCode = ref({
   formJS: computed(() =>
@@ -56,6 +56,7 @@ const stepperDisabled = computed(() => {
       (form.value.selectedListFields.length < 1 || !listValid.value))
   );
 });
+
 const form = ref<FormData>({
   title: "",
   id: "",
@@ -81,14 +82,57 @@ const addField = () => {
   });
 };
 
+const selectedField = ref<FormField | null>(null);
 const optionsDialog = ref(false);
-const openOptions = (field: any) => {
-  // field.name += "++";
+const openOptions = (field: FormField) => {
+  const copiedField = { ...field };
+  selectedField.value = copiedField;
+  optionsDialog.value = true;
+};
+
+const deleteField = (field: FormField) => {
+  form.value.fields = form.value.fields.filter((el) => el.lname != field.lname);
+};
+
+const confirmEditOptions = () => {};
+
+const cancelOptions = () => {
+  selectedField.value = null;
+  optionsDialog.value = false;
 };
 
 const changeListNameDialog = ref(false);
+const selectedListField = ref<FormField>({
+  type: "textbox",
+  name: "",
+  lname: "",
+  listName: "",
+});
 const editListName = (field: FormField) => {
-  console.log(field);
+  const copiedField = { ...field };
+  selectedListField.value = copiedField;
+  changeListNameDialog.value = true;
+  selectedListField.value.listName = copiedField.listName || copiedField.name;
+};
+
+const confirmEditList = () => {
+  const foundedListField = form.value.fields.find(
+    (field) => field.lname == selectedListField.value.lname
+  );
+  if (foundedListField) {
+    foundedListField.listName = selectedListField.value.listName;
+  }
+  changeListNameDialog.value = false;
+};
+
+const cancelEditList = () => {
+  selectedListField.value = {
+    type: "textbox",
+    name: "",
+    lname: "",
+    listName: "",
+  };
+  changeListNameDialog.value = false;
 };
 
 const copiedJS = ref(false);
@@ -109,6 +153,16 @@ const dontRepeat = (v: string): string | boolean => {
   return foundedRepeat.length > 1 ? "نام لاتین نباید تکراری باشد" : true;
 };
 
+const disabledOptions = (field: FormField): boolean => {
+  if (
+    field.type == "textarea" ||
+    field.type == "textbox" ||
+    field.type == "image"
+  )
+    return true;
+  return false;
+};
+
 const goToReportPage = () => {
   report.setFields(form.value.fields, form.value.id, form.value.title);
   router.push("/build/report?preSet=true");
@@ -116,11 +170,34 @@ const goToReportPage = () => {
 </script>
 <template>
   <v-container class="pa-0">
-    <v-dialog v-model="optionsDialog">
-      <v-card></v-card>
+    <v-dialog v-model="optionsDialog" max-width="450" :persistent="true">
+      <v-card>
+        <v-card-title> ویرایش نام نمایشی لیست </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text> dawadawd </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions class="py-3">
+          <v-btn color="primary" @click="confirmEditOptions">تایید</v-btn>
+          <v-btn color="error" @click="cancelOptions">لغو</v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
-    <v-dialog v-model="changeListNameDialog">
-      <v-card></v-card>
+    <v-dialog v-model="changeListNameDialog" max-width="450" :persistent="true">
+      <v-card>
+        <v-card-title> ویرایش نام نمایشی لیست </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <v-text-field
+            v-model="selectedListField.listName"
+            label="نام نمایشی"
+          ></v-text-field>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions class="py-3">
+          <v-btn color="primary" @click="confirmEditList">تایید</v-btn>
+          <v-btn color="error" @click="cancelEditList">لغو</v-btn>
+        </v-card-actions>
+      </v-card>
     </v-dialog>
     <v-stepper
       v-model="step"
@@ -208,15 +285,42 @@ const goToReportPage = () => {
                     :rules="[rules.required, dontRepeat]"
                   >
                   </v-text-field>
-                  <v-btn icon variant="text" @click="openOptions(field)">
+                  <v-btn icon variant="text">
                     <v-icon :icon="OptionsIcon"></v-icon>
+                    <v-menu activator="parent">
+                      <v-list density="compact">
+                        <v-list-item
+                          @click="deleteField(field)"
+                          :disabled="form.fields.length < 2"
+                        >
+                          <template v-slot:prepend>
+                            <v-icon :icon="DeleteIcon"></v-icon>
+                          </template>
+                          <v-list-item-title>حذف فیلد</v-list-item-title>
+                        </v-list-item>
+                        <v-list-item
+                          @click="openOptions(field)"
+                          :disabled="true"
+                        >
+                          <template v-slot:prepend>
+                            <v-icon :icon="SettingIcon"></v-icon>
+                          </template>
+                          <v-list-item-title>تنظیمات</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
                   </v-btn>
                 </v-col>
               </v-row>
               <v-row>
                 <v-col cols="12" class="d-flex align-center">
                   <v-divider></v-divider>
-                  <v-btn icon class="mx-3" @click="addField">
+                  <v-btn
+                    icon
+                    class="mx-3"
+                    @click="addField"
+                    :disabled="!fieldsValid"
+                  >
                     <v-icon :icon="AddIcon"></v-icon>
                   </v-btn>
                   <v-divider></v-divider>
